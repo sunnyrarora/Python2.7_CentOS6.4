@@ -9,13 +9,27 @@ vi Modules/Setup.dist
    -DUSE_SSL -I$(SSL)/include -I$(SSL)/include/openssl \
     -L$(SSL)/lib -lssl -lcrypto
 
-./configure --prefix=/usr/local --enable-unicode=ucs2 --enable-shared       LDFLAGS="-Wl,-rpath /usr/local/lib"
+#Now lets install the python2.7. One important thing is the internal format Python which stores Unicode strings in is an implementation detail. Python installations default to the unicode representation of the OS environment (ucs2 vs ucs4). At to reinstall python, forcing a different unicode representation, especially when given pre-compiled python binaries. Here are examples of using the --enable-unicode setting when building python. 
+
+# Either use ucs2 dpending on your requirment
+./configure --prefix=/usr/local --enable-unicode=ucs2 --enable-shared  LDFLAGS="-Wl,-rpath /usr/local/lib"
+
+#Or you can use ucs4 
+./configure --prefix=/usr/local --enable-unicode=ucs4 --enable-shared  LDFLAGS="-Wl,-rpath /usr/local/lib"
+
 make && make altinstall
 cp /usr/lib64/python2.6/lib-dynload/bz2.so /usr/local/lib/python2.7/
 
+#By below steps you install the setup tools via python2.7, make sure to upgrade pip and virtual evnironment. Also make sure you installed pip and virtualenv previously.
 cd /opt
-	wget https://bootstrap.pypa.io/ez_setup.py -O - | python2.7   #install the setup tools.
-	/usr/local/bin/easy_install --version    # check this easy_install version, this should be related to python2.7
-	/usr/local/bin/easy_install pip     #install pip2.7  for python2.7
-	pip2.7 install --upgrade pip
-	pip2.7 install --upgrade virtualenv    #upgrade the virtualenv which is related to python2.7
+wget https://bootstrap.pypa.io/ez_setup.py -O - | python2.7   #install the setup tools.
+/usr/local/bin/easy_install --version    # check this easy_install version, this should be related to python2.7
+/usr/local/bin/easy_install pip     #install pip2.7  for python2.7
+pip2.7 install --upgrade pip
+pip2.7 install --upgrade virtualenv    #upgrade the virtualenv which is related to python2.7
+
+#Below are steps which you can perform for creating your virtual evnironment of project directory which will run by python2.7
+cd /home
+cd project
+virtualenv venv   #creating a virtual environment 
+source venv/bin/activate 
